@@ -13,6 +13,9 @@ Oracle_Connect()
 
 tag = Mac(data, len(data))
 
+
+print (tag, len(data), data)
+
 ret = Vrfy(data, len(data), tag)
 
 if ret == 1:
