@@ -1,37 +1,46 @@
 from oracle import *
 from helper import *
 
-MAX_MSG_LEN = 504
+# stackoverflow
+def egcd(a, b):
+    if a == 0:
+        return (b, 0, 1)
+    else:
+        g, y, x = egcd(b % a, a)
+        return (g, x - (b // a) * y, y)
 
-def transform(m):
-    return bin(m)[2:].zfill(MAX_MSG_LEN + 8) + bin(m)[2:].zfill(MAX_MSG_LEN + 8)
+# stackoverflow
+def modinv(a, m):
+    g, x, y = egcd(a, m)
+    if g != 1:
+        raise Exception('modular inverse does not exist')
+    else:
+        return x % m
 
-n = 119077393994976313358209514872004186781083638474007212865571534799455802984783764695504518716476645854434703350542987348935664430222174597252144205891641172082602942313168180100366024600206994820541840725743590501646516068078269875871068596540116450747659687492528762004294694507524718065820838211568885027869
+def main():
+	n = 119077393994976313358209514872004186781083638474007212865571534799455802984783764695504518716476645854434703350542987348935664430222174597252144205891641172082602942313168180100366024600206994820541840725743590501646516068078269875871068596540116450747659687492528762004294694507524718065820838211568885027869
 
-e = 65537
+	e = 65537
 
-Oracle_Connect()
+	Oracle_Connect()
 
-msg = "Crypto is hard --- even schemes that look complex can be broken"
+	msg = "Crypto is hard --- even schemes that look complex can be broken"
 
-m = ascii_to_int(msg)
+	m = ascii_to_int(msg)
 
-print(m, transform(m))
+	s0=Sign(1)
+	s1 = Sign(2)
+	s2 = Sign(m/2)
 
-# Should fail, because you're not allowed to query on the original message
-sigma = Sign(m)
-assert(sigma < 0)
+	sigma = (s1 * s2 * modinv(s0, n)) % n
 
-# All other arbitrary messages <= 504 bits should be accepted by the oracle
-msg = "Hello, World!"
+	if Verify(m, sigma):
+		print "found"
+		print hex(sigma)
+	else:
+		print "not found"	
 
-m = ascii_to_int(msg)
+	Oracle_Disconnect()
 
-sigma = Sign(m)
-if sigma < 0:
-    raise SystemExit
-
-if Verify(m,sigma):
-    print "Oracle is working properly!"
-
-Oracle_Disconnect()
+if __name__ == '__main__':
+	main()
