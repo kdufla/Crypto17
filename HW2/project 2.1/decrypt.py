@@ -41,7 +41,6 @@ def find_padding(i, iv, ctext):
 Oracle_Connect()
 ans=""
 p=block-find_padding(0, data[-2*block:-block], data[-block:])
-print p
 for i in range(mesLenByte, block, -block):
 	ans=decryptBlock(data[i-2*block:i-block], data[i-block:i], p)+ans
 	p=0

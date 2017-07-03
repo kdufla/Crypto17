@@ -29,7 +29,6 @@ for i in range(2*block, mesLenBytes, 2*block):
 	mes1=xor(tag,bytearray(data[i:i+block]))
 	mes2=data[i+block:i+2*block]
 	mes=mes1+mes2
-	print mes
 	tag = Mac(mes, len(mes))
 
 
